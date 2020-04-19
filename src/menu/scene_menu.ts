@@ -41,8 +41,10 @@ class SceneMenu extends Phaser.Scene
             repeat: -1
         });
 
-        this.input.on('pointerdown', function () {
-            this.scene.switch('game');
+        this.input.on('pointerdown', () => {
+
+            const s2 = this.scene.switch('game');
+            s2.get('game').cameras.main.fadeIn(1000);
         }, this);
 
     }

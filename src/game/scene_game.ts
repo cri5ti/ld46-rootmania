@@ -21,6 +21,13 @@ let i: Phaser.GameObjects.Image;
 const $corrected = Symbol();
 
 function preload(this: Phaser.Scene) {
+
+
+    this.load.audio('sfx_plop', require('../res/sfx/blip_select_1.wav'));
+    this.load.audio('sfx_pick', require('../res/sfx/jump_15.wav'));
+    this.load.audio('sfx_get', require('../res/sfx/blip_select_12.wav'));
+    this.load.audio('music', require('../res/sfx/2192.ogg'));
+
     this.load.image('bg1', require('../res/bg1.png'));
     this.load.image('tiles1', require('../res/piples1.png'))
 
@@ -56,9 +63,14 @@ function preload(this: Phaser.Scene) {
 }
 
 
-function create() {
+function create(this: Scene) {
 
     this.add.image(0, 0, 'bg1').setOrigin(0, 0);
+
+    if (process.env.NODE_ENV !== 'development') {
+        const music = this.sound.add('music', {loop: true, volume: 0.75});
+        setTimeout(() => music.play(), 2000);
+    }
 
 
     const truck1 = this.add.sprite(300, 80,'atlas', 'truck_1');
@@ -103,22 +115,39 @@ function create() {
 
     const map = new Map(this);
 
-    for (let i = 0; i < 16; i++) {
+    const initialPieceCount = 15;
+
+    for (let i = 0; i < initialPieceCount; i++) {
         const f = ["pipe_NESW", "pipe_NE", "pipe_NES", "pipe_NS"][Math.random() * 3 | 0]
-        const img = this.add.image(4 + i * 20, 222, 'atlas', f)
+
+        let ty = 222;
+        let tx = 4 + i * 20;
+
+        const img = this.add.image(400, ty, 'atlas', f)
             .setDepth(2)
             .setSize(16, 16)
             .setOrigin(0,0);
+
+        this.tweens.add({
+                // scene.sound.play(   'sfx_get', { delay: 0.4 });
+            onComplete: () =>    scene.sound.play(   'sfx_get'),
+            delay: i * lerp(i, 0, initialPieceCount, 120, 60),
+            targets: [ img ],
+            x: { from: 400,  to: tx },
+            duration: 500,
+            ease: 'Sine.easeIn'
+        });
 
         img.setInteractive();
         this.input.setDraggable(img);
     }
 
-
+    // this.sound.add('blip_select_1');
 
     let dragEmitter: ParticleEmitter;
     let scene = this;
     this.input.on('dragstart', function (pointer, gameObject, dragX, dragY) {
+        scene.sound.play(   'sfx_pick');
         dragEmitter = createEmitterGlitter(scene);
         dragEmitter.startFollow(gameObject, 8, 8);
     });
@@ -128,9 +157,15 @@ function create() {
         gameObject.y = dragY;
     });
 
+
+    function snap(i, grid, offs) {
+        return Math.round((i - offs) / grid) * grid + offs;
+    }
+
     this.input.on('dragend', function (pointer, gameObject: Sprite, dragX, dragY) {
-        gameObject.x = Math.round(gameObject.x / 16) * 16;
-        gameObject.y = Math.round(gameObject.y / 16) * 16;
+        scene.sound.play(   'sfx_plop');
+        gameObject.x = snap(gameObject.x, 16, 0);
+        gameObject.y = snap(gameObject.y, 16, 10);
         dragEmitter.on = false;
         let emitter = dragEmitter;
         scene.time.delayedCall(3000, function() {
@@ -256,7 +291,7 @@ class Map {
         // this._tileLayer.layer.width = width;
         // this._tileLayer.layer.height = height;
 
-        const container = this.container = scene.add.container(0, 80);
+        const container = this.container = scene.add.container(0, 90);
 
         // trees
         for (let i = 0; i < 6; i++) {
@@ -285,6 +320,7 @@ class Map {
             let [x, y] = randXY(0, (height - 1)>>1, width - 1, height - 1);
             this.featMap[y][x] = Feat.Water;
         }
+
 
 
         this.rebuildTiles();
@@ -376,3 +412,8 @@ function randPick<T>(arr:T[]):T {
 
 
 export default sceneGame;
+
+function lerp(x, a, b, u, v) {
+    let t = (x - b) / (b - a);
+    return t * (v - u) + u;
+}

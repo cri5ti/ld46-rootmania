@@ -3,6 +3,7 @@ import sceneGame from "../game/scene_game";
 import sceneMenu from "../menu/scene_menu";
 
 
+
 const gameConfig: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: 320,
@@ -19,7 +20,8 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
         pixelArt: true
     },
     // scene: [sceneMenu, sceneGame]
-    scene: [sceneGame]
+    scene:  (process.env.NODE_ENV === 'development') ? [sceneGame] : [sceneMenu, sceneGame]
 };
+
 
 export default gameConfig;
