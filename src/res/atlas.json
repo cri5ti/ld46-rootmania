@@ -1,0 +1,76 @@
+{ "frames": {
+   "particle1": {
+    "frame": { "x": 28, "y": 0, "w": 12, "h": 12 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 2, "w": 12, "h": 12 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "particle2": {
+    "frame": { "x": 8, "y": 16, "w": 6, "h": 6 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 5, "y": 6, "w": 6, "h": 6 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "particle3": {
+    "frame": { "x": 0, "y": 16, "w": 8, "h": 11 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 3, "y": 3, "w": 8, "h": 11 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "p4": {
+    "frame": { "x": 40, "y": 0, "w": 8, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 4, "y": 0, "w": 8, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "p3": {
+    "frame": { "x": 28, "y": 12, "w": 12, "h": 12 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 4, "y": 0, "w": 12, "h": 12 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "p2": {
+    "frame": { "x": 16, "y": 0, "w": 12, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 4, "y": 0, "w": 12, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "p1": {
+    "frame": { "x": 0, "y": 0, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.17-x64",
+  "image": "atlas.png",
+  "format": "RGBA8888",
+  "size": { "w": 48, "h": 27 },
+  "scale": "1",
+  "layers": [
+   { "name": "particle1", "opacity": 255, "blendMode": "normal" },
+   { "name": "particle2", "opacity": 255, "blendMode": "normal" },
+   { "name": "particle3", "opacity": 255, "blendMode": "normal" },
+   { "name": "p4", "opacity": 255, "blendMode": "normal" },
+   { "name": "p3", "opacity": 255, "blendMode": "normal" },
+   { "name": "p2", "opacity": 255, "blendMode": "normal" },
+   { "name": "p1", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}
