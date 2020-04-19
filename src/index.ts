@@ -115,15 +115,16 @@ function create ()
     // logo.setCollideWorldBounds(true);
 
 
-    const image = this.add.image(150, 150, 'atlas', 'p1');
-    image.setInteractive();
-    this.input.setDraggable(image);
-
-
-    emitter.startFollow(image);
+    for(let i=0;i<4;i++) {
+        const f = ["p1", "p2", "p3", "p4"][Math.random()*4|0]
+        const img = this.add.image(10 + i*20, 230, 'atlas', f);
+        img.setInteractive();
+        this.input.setDraggable(img);
+    }
 
 
     this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+        emitter.startFollow(gameObject);
         gameObject.x = dragX;
         gameObject.y = dragY;
         emitter.on = true;
