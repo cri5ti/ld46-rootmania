@@ -30,13 +30,19 @@ export class SceneGame extends Phaser.Scene {
     create() {
         this.add.image(0, 0, 'bg1').setOrigin(0, 0);
 
+        this.anims.create({
+            key: 'middle',
+            frames: this.anims.generateFrameNames('animations', { prefix: 'middle_', end: 7}),
+            repeat: -1,
+            frameRate: 20
+        });
+
         if (PROD) {
             const music = this.sound.add('music', {loop: true, volume: 0.75});
             setTimeout(() => music.play(), 2000);
         }
 
-
-        const truck1 = this.add.sprite(300, 80, 'atlas', 'truck_1');
+        const truck1 = this.add.sprite(300, 82, 'atlas', 'truck_1');
         this.tweens.add({
             targets: [truck1],
             x: 0,
@@ -46,7 +52,7 @@ export class SceneGame extends Phaser.Scene {
             repeat: -1
         });
         const smoke = createEmitterSmoke(this);
-        smoke.startFollow(truck1, 16);
+        smoke.startFollow(truck1, 8);
 
         this.pipeMap = new PipeMap(this);
 

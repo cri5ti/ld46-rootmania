@@ -22,7 +22,7 @@ export const enum Dir {
 }
 
 export const DirOpposite = [
-    /*N = / Dir.S,
+    /*N =*/ Dir.S,
     /*E =*/ Dir.W,
     /*S =*/ Dir.N,
     /*W =*/ Dir.E
@@ -87,25 +87,29 @@ export const PipeExits = {
     [Feat.PipeNESW]: 4,
 };
 
-// export const MaskTile = {
-//     // horizontal, vertical
-//     [Feat.PipeNS]: {frame: 'pipe_NS', deg: 0},
-//     [Feat.PipeEW]: {frame: 'pipe_NS', deg: 1},
-//
-//     // corner
-//     [Feat.PipeNE]: {frame: 'pipe_NE', deg: 0},
-//     [Feat.PipeES]: {frame: 'pipe_NE', deg: 1},
-//     [Feat.PipeSW]: {frame: 'pipe_NE', deg: 2},
-//     [Feat.PipeNW]: {frame: 'pipe_NE', deg: 3},
-//
-//     // 3
-//     [Feat.PipeNES]: {frame: 'pipe_NES', deg: 0},
-//     [Feat.PipeESW]: {frame: 'pipe_NES', deg: 1},
-//     [Feat.PipeNSW]: {frame: 'pipe_NES', deg: 2},
-//     [Feat.PipeNEW]: {frame: 'pipe_NES', deg: 3},
-//
-//     // 4
-//     [Feat.PipeNESW]: {frame: 'pipe_NESW', deg: 0},
-// };
+
+export const PIPE_MASKS = {
+    // straight (class a)
+    [Feat.PipeEW]: [null, {c: 'a', x: 0}, null, {c: 'a', x: 0}], // checked
+    [Feat.PipeNS]: [{c: 'a', x: 0}, null, {c: 'a', x: 0}, null],
+
+    // corners (class b)
+    [Feat.PipeNE]: [{c: 'b', x: 0}, {c: 'b', x: 1}, null, null],
+    [Feat.PipeES]: [null, {c: 'b', x: 0}, {c: 'b', x: 1}, null],
+    [Feat.PipeSW]: [null, null, {c: 'b', x: 0}, {c: 'b', x: 1}],
+    [Feat.PipeNW]: [{c: 'b', x: 1}, null, null, {c: 'b', x: 0}], // checked
+
+    // tri
+    [Feat.PipeNES]: [{c: 'c', x: 0}, {c: 'd', x: 0}, {c: 'c', x: 1}, null], // checked
+    [Feat.PipeESW]: [null, {c: 'c', x: 0}, {c: 'd', x: 0}, {c: 'c', x: 1}],
+    [Feat.PipeNSW]: [{c: 'c', x: 1}, null, {c: 'c', x: 0}, {c: 'd', x: 0}],
+    [Feat.PipeNEW]: [{c: 'd', x: 0}, {c: 'c', x: 1}, null, {c: 'c', x: 0}], // checked
+
+    // quad (class c)
+    [Feat.PipeNESW]: [{c: 'b', x: 0}, {c: 'b', x: 0}, {c: 'b', x: 0}, {c: 'b', x: 0}],
+};
+
+export const MASK2 = new Array(16).fill(0).map((_, i) => (1 << (i + 1)) - 1);
+
 
 export const Rad90 = Math.PI/2;

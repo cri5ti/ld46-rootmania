@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
-import {PROD} from "../app/game_config";
+import {DEBUG, PROD} from "../app/game_config";
 import {randXY} from "../util/math";
-import {DirXY, Feat, isWater} from "./consts";
-import {waterSpout} from "./objs/fluid_obj";
+import {Dir, DirOpposite, DirXY, Feat, isPipeOpen, isWater} from "./consts";
 import {PipeGameObject} from "./objs/pipe_obj";
+import {waterSpout} from "./objs/spout_obj";
+import {TreeGameObject} from "./objs/tree_obj";
 import Container = Phaser.GameObjects.Container;
 import Group = Phaser.GameObjects.Group;
 import Scene = Phaser.Scene;
@@ -23,6 +24,9 @@ export class PipeMap {
 
     pipesMap: PipeGameObject[][];
     pipesGroup: Group;
+    treesGroup: Group;
+
+    trees: TreeGameObject[];
     // spoutsGroup: Group;
 
     private container: Container;
@@ -35,6 +39,8 @@ export class PipeMap {
         this.flowMap = makeMap(width, height, 0);
         this.featMap = makeMap(width, height, 0);
         this.pipesMap = makeMap(width, height, null);
+        this.trees = [];
+
         this.init();
     }
 
@@ -42,36 +48,24 @@ export class PipeMap {
         const {width, height, scene} = this;
 
         const container = this.container = scene.add.container(this.offsetX, this.offsetY);
-
-
-        // fluid update ticker
-        this.scene.time.addEvent({
-            loop: true,
-            delay: 200,
-            callback: this.fluidUpdate,
-            callbackScope: this
-        });
+        this.pipesGroup = scene.add.group();
+        this.treesGroup = scene.add.group();
 
         // trees
         for (let i = 0; i < 6; i++) {
             // let x = randAB(0, width);
 
-            let x = 2 + i * 3;
-
-            let px = x * 16;
-            let py = -16;
+            let tx = 2 + i * 3;
 
             // let frame = randPick(['tree_1', 'tree_2', 'tree_3', 'tree_4']);
-            let frame = ['tree_1', 'tree_2', 'tree_3', 'tree_4', 'tree_3', 'tree_2'][i];
 
-            let s = scene.make.sprite({}, false)
-                .setPosition(px, py)
-                .setTexture('atlas', frame)
-                .setOrigin(0, 0);
-            container.add(s);
+            let t = new TreeGameObject(scene, tx, i%4);
+            this.trees[tx] = t;
+            this.treesGroup.add(t);
+            container.add(t)
 
-            // this.addPipe(x, 0, Feat.PipeNS);
-            // this.addPipe(x, 1, Feat.PipeNS);
+            // this.addPipe(x, 0, Feat.PipeNS, false);
+            // this.addPipe(x, 1, Feat.PipeNS, false);
             // this.featMap[0][x] = Feat.PipeNS;
             // this.featMap[1][x] = Feat.PipeNS;
         }
@@ -87,20 +81,25 @@ export class PipeMap {
         }
 
 
-        this.pipesGroup = scene.add.group();
         // this.spoutsGroup = scene.add.group();
 
-        // this.addPipe(0, 0);
-        // this.addPipe(1, 0);
-        // this.addPipe(0, 1);
-        // this.addPipe(2, 3, Feat.PipeNESW);
-        // this.addPipe(3, 3, Feat.PipeEW);
-        // this.addPipe(4, 3, Feat.PipeSW);
-        // this.addPipe(4, 4, Feat.PipeNE);
-        this.addPipe(5, 4, Feat.PipeNW);
-        this.addPipe(4, 4, Feat.PipeEW);
+
+        this.addPipe(5, 4, Feat.PipeNEW, false);
+        this.addPipe(5, 0, Feat.PipeNS, false);
+        this.addPipe(5, 1, Feat.PipeNS, false);
+        this.addPipe(5, 2, Feat.PipeNS, false);
+        this.addPipe(5, 3, Feat.PipeNS, false);
 
 
+        this._rebuildNeighbors();
+
+        // fluid update ticker
+        this.scene.time.addEvent({
+            loop: true,
+            delay: 50,
+            callback: this.fluidUpdate,
+            callbackScope: this
+        });
 
         this.rebuildTiles();
     }
@@ -120,12 +119,6 @@ export class PipeMap {
                 if (isWater(feat))
                     frame = 'water';
 
-                // if (isPipe(feat)) {
-                //     // frame = 'pipe_NESW';
-                //     let pt = PipeTile[feat];
-                //     frame = pt.frame;
-                // }
-
                 if (!frame) continue;
 
                 let s = scene.make.sprite({}, false)
@@ -134,60 +127,28 @@ export class PipeMap {
                     .setOrigin(0, 0);
 
                 container.add(s);
-
-                // let t = layer.getTileAt(x, y, true);
-                //
-                // let f = featMap[x][y];
-                //
-                //
-                // t.updatePixelXY()
-                // t.index;
-                // //
-                // //
-                // // const ix = Math.random()*5 | 0;
-                // // t.index = ix;
-                // // t.flipX = Math.random()*2 > 1 ? true : false;
-                // // t.flipY = Math.random()*2 > 1 ? true : false;
-                //
-                // layer.putTileAt(t, x, y);
             }
         }
 
     }
 
-    update() {}
+    update() {
+
+    }
 
     inBounds = (tx, ty) => tx >= 0 && tx <= this.width - 1 && ty >= 0 && ty <= this.height - 1;
 
     fluidUpdate() {
-        // update inflows
-        // this.pipesGroup.children.each((p: PipeGameObject) => {
-        //     let tx = p.tileX;
-        //     let ty = p.tileY;
-        //
-        //
-        //     for (let dir = 0; dir < 4; dir++) {
-        //         let [dx, dy] = DirXY[dir];
-        //         let rx = tx + dx;
-        //         let ry = ty + dy;
-        //         if (!this.inBounds(rx, ry)) continue;
-        //
-        //         let w = isWater(this.featMap[ry][rx]) ? 255 : 0;
-        //
-        //         let pn = p.neighbors[dir];
-        //         if (pn)
-        //             w |= (pn.fluidMasks[dir] & 1);
-        //
-        //         p.inflow[dir] = w ? 255 : 0;
-        //
-        //     }
-        // });
+        DEBUG && console.log("=======================");
+
+        this.treesGroup.children.each((i: TreeGameObject) => {
+            i.fixedUpdate();
+        });
 
         this.pipesGroup.children.each((i: PipeGameObject) => {
             i.fluidUpdatePre();
         });
 
-        // update inflows
         this.pipesGroup.children.each((i: PipeGameObject) => {
             i.fluidUpdate();
         });
@@ -206,8 +167,7 @@ export class PipeMap {
         this.addPipe(tx, ty, featMask);
     }
 
-    private addPipe(tx: int, ty: int, featMask: int) {
-
+    private addPipe(tx: int, ty: int, featMask: int, rebuild = true) {
         const p = new PipeGameObject(this.scene, this.container, tx * 16, ty * 16, featMask);
 
         this.container.add(p);
@@ -220,20 +180,43 @@ export class PipeMap {
 
         this.pipesMap[ty][tx] = p;
 
+        if (rebuild)
+            this._rebuildNeighbors();
+    }
+
+    private _rebuildNeighbors() {
         // rebuild neighbours
         this.pipesGroup.children.each((ip: PipeGameObject) => {
             for (let dir = 0; dir < 4; dir++) {
                 let [dx, dy] = DirXY[dir];
                 let rx = ip.tileX + dx;
                 let ry = ip.tileY + dy;
+
+                if (ry == -1 && dir == 0) {
+                    let t = this.trees[ip.tileX];
+                    if (t) {
+                        ip.neighbors[dir] = t;
+                        t.pipe = ip;
+                    }
+                }
+
                 if (!this.inBounds(rx, ry)) continue;
+
+                if (!isPipeOpen(ip.pipeFlag, dir))
+                    ip.neighbors[dir] = null;
 
                 let np;
                 let f = this.featMap[ry][rx];
+
                 if (isWater(f))
                     np = waterSpout;
-                else
+                else {
                     np = this.pipesMap[ry][rx];
+                    if (np) {
+                        if (!isPipeOpen(np.pipeFlag, DirOpposite[dir]))
+                            np = null;
+                    }
+                }
 
                 ip.neighbors[dir] = np;
             }

@@ -49,11 +49,7 @@ class SceneMenu extends Phaser.Scene
 
     }
 
-    update() {
-        // const s = Math.cos(this.game.getTime() / 1000);
-        // console.log(s);
-        // this._logo.scale = this.game.getTime();
-    }
+    update() {}
 
 }
 

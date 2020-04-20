@@ -1,14 +1,18 @@
 import * as Phaser from 'phaser';
-import {DirOpposite, Feat, isPipe, isPipeOpen, PipeExits, PipeFrame} from "../consts";
+import {DEBUG} from "../../app/game_config";
+import {DirOpposite, DirXY, isPipe, isPipeOpen, MASK2, PIPE_MASKS, PipeExits, PipeFrame} from "../consts";
 import {IFluidObj} from "./fluid_obj";
 import Container = Phaser.GameObjects.Container;
+
+let id = 0;
 
 export class PipeGameObject
     extends Phaser.GameObjects.Container
     implements IFluidObj
 {
-    public neighbors: PipeGameObject[] = [null, null, null, null];
+    public neighbors: IFluidObj[] = [null, null, null, null];
 
+    public id: string;
     public readonly pipeFlag: int;
     public readonly tileX: int;
     public readonly tileY: int;
@@ -18,6 +22,7 @@ export class PipeGameObject
 
     public pressure: [int, int, int, int] = [0, 0, 0, 0];
     public volume: [int, int, int, int] = [0, 0, 0, 0];
+    public debit: [int, int, int, int] = [0, 0, 0, 0];
     public flowMask: [int, int, int, int] = [0, 0, 0, 0];
 
     // public fluidMasks: [int, int, int, int] = [0, 0, 0, 0];
@@ -29,6 +34,7 @@ export class PipeGameObject
     private maskImages: Phaser.GameObjects.Image[] = [];
     private maskBitmaps: Phaser.Display.Masks.BitmapMask[] = [];
     private tileFluids: Phaser.GameObjects.TileSprite[] = [];
+    private tweenFluid: Phaser.Tweens.Tween;
 
 
     constructor(scene, parent: Container, x, y, pipeFlag) {
@@ -36,6 +42,7 @@ export class PipeGameObject
 
         const offY = parent.y;
 
+        this.id = '#' + (id++);
         this.tileX = x / 16;
         this.tileY = y / 16;
         this.pipeFlag = pipeFlag;
@@ -62,19 +69,19 @@ export class PipeGameObject
                 .setAlpha(0.75)
                 .setMask(this.maskBitmaps[i])
                 .setOrigin(0.5, 0.5)
-                .setPosition(8, 8)
-                .setSize(128, 128)
+                // .setPosition(8, 8)
+                .setSize(64, 64)
                 .setVisible(false)
             ;
 
-            this.scene.tweens.add({
-                targets: [this.tileFluids[i]],
-                x: -20,
-                duration: 1000,
-                ease: 'Sine.easeInOut',
-                yoyo: true,
-                repeat: -1
-            });
+            // this.tweenFluid = this.scene.tweens.add({
+            //     targets: [this.tileFluids[i]],
+            //     x: 8,
+            //     duration: 1000,
+            //     ease: 'Sine.easeInOut',
+            //     yoyo: true,
+            //     repeat: -1
+            // });
 
             this.add(this.tileFluids[i]);
         }
@@ -121,7 +128,7 @@ export class PipeGameObject
 
             let neigh = this.neighbors[dir];
             if (neigh)
-                nextPressure = neigh.pressure[opp];
+                nextPressure = -(neigh.pressure[opp] || 0);
 
             this.nextPressure[dir] = nextPressure;
         }
@@ -133,7 +140,7 @@ export class PipeGameObject
         // internal mask: inward fluids masks (or'ed)
         let internalMask = 0;
         for(let dir=0; dir<4; dir++) {
-            if (this.nextPressure[dir] > 0)
+            if (this.nextPressure[dir] < 0)
                 internalMask |= this.flowMask[dir];
         }
 
@@ -146,7 +153,8 @@ export class PipeGameObject
 
             let p = this.nextPressure[dir] = this.nextPressure[dir] - avg;
 
-            this.volume[dir] += p;
+            this.debit[dir] = p % 0xFFFF;
+            this.volume[dir] = (this.volume[dir] + this.debit[dir]) % 0xFFFF;
 
             if (p == 0) continue; // still
 
@@ -154,7 +162,7 @@ export class PipeGameObject
 
             let m = this.flowMask[dir];
 
-            if (p < 0) {
+            if (p > 0) {
                 // outward flow
                 let slice = internalMask & (MASK2[bits - 1]);
 
@@ -162,17 +170,18 @@ export class PipeGameObject
                 // let mask = nextMask >> (16 - bits);
                 // let mask = nextMask && (MASK2[bits - 1])
 
-                m = (m << bits) | slice;
+                m = ((m << bits) & 0xFFFF) | slice;
                 // m = (m >> bits) | mask;
             } else {
                 // inward flow
-                let nextMask = 0;
-                let neigh = this.neighbors[dir];
-                if (neigh) {
-                    nextMask = neigh.flowMask[opp];
+                let neighborMask = 0;
+                let neighbor = this.neighbors[dir];
+                if (neighbor) {
+                    neighborMask = neighbor.flowMask[opp];
                 }
 
-                let slice = (nextMask & (MASK2[bits - 1])) << (16 - bits);
+                let offsetBits = 16 - bits;
+                let slice = ((neighborMask >> offsetBits) & (MASK2[bits - 1])) << offsetBits;
 
                 m = (m >> bits) | slice;
             }
@@ -180,47 +189,17 @@ export class PipeGameObject
             this.nextFlowMask[dir] = m;
         }
 
-
-        // // flow
-        // for(let i=0; i<4; i++) {
-        //     const flow = this.inflow[i] > 0 ? 8 : 0;
-        //     if (flow)
-        //         this.fluidMasks[i] = this.fluidMasks[i] >> 1;
-        // }
-        //
-        // // split flow
-        // let midFlow = 0;
-        // for(let i=0; i<4; i++)
-        //     midFlow += this.fluidMasks[i] & 0b1;
-        //
-        //
-        // const splits = [
-        //     [],
-        //     [[0],[1],[2],[3]],
-        //     [[0,1], [0,2], [0,3], [1,2], [1,3], [2,3]],
-        //     [[0,1,2], [0,1,3], [0,2,3], [1,2,3]],
-        //     [[0,1,2,3]]
-        // ]
-        //
-        // const rnd_split = randPick(splits[midFlow]);
-        // if (rnd_split)
-        //     for(let i of rnd_split) {
-        //         this.fluidMasks[i] = ((this.fluidMasks[i] << 1) & 0b1111) | 1;
-        //     }
-        //
-        //
-        // // in flow
-        // for(let i=0; i<4; i++) {
-        //     const flow = this.inflow[i] > 0 ? 8 : 0;
-        //     this.fluidMasks[i] = this.fluidMasks[i] | flow;
-        // }
-
-
     }
 
     fluidUpdatePost() {
-
-        console.log('Pipe: [%d, %d]', this.tileX, this.tileY);
+        DEBUG && console.log('Pipe: %s [%d, %d]  ⏩pressures: [%s],   ➡fluid: [%s],    ➡volume [%s],  🔀neighbors: [%s]',
+            this.id,
+            this.tileX, this.tileY,
+            this.nextPressure.join(","),
+            this.nextFlowMask.map(i=>printMask(i)).join(", "),
+            this.volume.join(", "),
+            this.neighbors.map(i => i ? i.id : "▫").join(", ")
+        );
 
         for(let i=0; i<4; i++) {
             this.pressure[i] = this.nextPressure[i];
@@ -246,50 +225,36 @@ export class PipeGameObject
                 + (seg2 > 0 ? 0b0100 : 0)
                 + (seg3 > 0 ? 0b1000 : 0);
 
-            // const fluidMask = '2';
-
-            // const maskFrame = 'a15';
-
             if (open) {
                 const x2 = x1[i];
                 const maskClass = x2.c;
                 const flipX = x2.x == 1;
-                const flipY = x2.y == 1;
                 const maskFrame = maskClass + maskIndex;
 
                 this.maskImages[i]
                     .setTexture('masks', maskFrame)
                     .setFlipX(flipX)
-                    .setFlipY(flipY)
                 ;
             }
 
-            this.tileFluids[i].setVisible(open);
+            const d = Math.abs(this.debit[i]);
+            const od = Math.round(this.volume[i] / 0x1FF);
+            const [dx, dy] = DirXY[i];
+
+            this.tileFluids[i]
+                .setPosition(
+                    (dx * od) % 16, (dy * od) % 16
+                )
+                .setTexture('atlas', d > 0 ? 'flow_1' : 'flow_0')
+                .setVisible(open);
         }
     }
 }
 
-const PIPE_MASKS = {
-    [Feat.PipeNW]: [{c: 'b', x: 1, y: 0}, null, null, {c: 'b', x: 0, y: 0}],
-    [Feat.PipeEW]: [null, {c: 'a', x: 0, y: 0}, null, {c: 'a', x: 0, y: 0}],
-};
-
-const MASK2 = new Array(16).fill(0).map((_, i) => (1 << (i + 1)) - 1);
 
 
-
-// export class PipePlugin extends Phaser.Plugins.BasePlugin {
-//     constructor (pluginManager)
-//     {
-//         super(pluginManager);
-//         pluginManager.registerGameObject('pipe', this.createPipe);
-//     }
-//
-//     createPipe (this: any, x, y)
-//     {
-//         return this.displayList.add(new PipeGameObject(this.scene, x, y));
-//     }
-// }
-
-
-
+function printMask(i:number) {
+    let s = i.toString(2);
+    let l = s.length;
+    return '0'.repeat(16 - l) + s;
+}

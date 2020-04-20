@@ -90,6 +90,10 @@ export class Gui extends Phaser.GameObjects.Container {
             if (!this.pipeMap.inBounds(tx, ty))
                 return;
 
+            if (this.pipeMap.featMap[ty][tx] == Feat.Water) {
+                // todo sfx
+                return;
+            }
 
             // let tile = Feat.PipeNESW; // fixme
 
