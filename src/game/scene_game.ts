@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {tweakJsonCoords} from "../util/json";
-import {lerp} from "../util/math";
+import {lerp, randPick} from "../util/math";
+import {Feat, PipeFrame} from "./consts";
 import {createEmitterGlitter} from "./particles/particle_glit";
 import {createEmitterSmoke} from "./particles/particle_smoke";
 import {PipeMap} from "./pipe_map";
@@ -19,11 +20,13 @@ class SceneGame extends Phaser.Scene {
         this.load.audio('sfx_plop', require('../res/sfx/blip_select_1.wav'));
         this.load.audio('sfx_pick', require('../res/sfx/jump_15.wav'));
         this.load.audio('sfx_get', require('../res/sfx/blip_select_12.wav'));
+        this.load.audio('sfx_replace', require('../res/sfx/explosion_11.wav'));
         this.load.audio('music', require('../res/sfx/2192.ogg'));
 
         this.load.image('bg1', require('../res/bg1.png'));
         this.load.atlas('atlas', require('../res/atlas.png'), tweakJsonCoords(require('../res/atlas.json')));
         this.load.atlas('masks', require('../res/masks.png'), tweakJsonCoords(require('../res/masks.json')));
+        this.load.atlas('animations', require('../res/animations.png'), tweakJsonCoords(require('../res/animations.json')));
     }
 
 
@@ -81,13 +84,22 @@ class SceneGame extends Phaser.Scene {
 
         const initialPieceCount = 15;
 
+        const allPipes = [ // todo: add ratios?
+            Feat.PipeNS, Feat.PipeEW,
+            Feat.PipeNE, Feat.PipeES, Feat.PipeSW, Feat.PipeNW,
+            Feat.PipeNES, Feat.PipeESW, Feat.PipeNSW, Feat.PipeNEW,
+            Feat.PipeNESW
+        ];
+
         for (let i = 0; i < initialPieceCount; i++) {
-            const f = ["pipe_NESW", "pipe_NE", "pipe_NES", "pipe_NS"][Math.random() * 3 | 0]
+            const feat = randPick(allPipes);
 
             let ty = 222;
             let tx = 4 + i * 20;
 
-            const img = this.add.image(400, ty, 'atlas', f)
+            const frame = PipeFrame[feat];
+
+            const img = this.add.image(400, ty, 'atlas', frame)
                 .setDepth(2)
                 .setSize(16, 16)
                 .setOrigin(0, 0);
@@ -117,6 +129,23 @@ class SceneGame extends Phaser.Scene {
 
         // this.sound.add('blip_select_1');
 
+
+
+        this.anims.create({
+            key: 'drop_cursor_fx1',
+            frames: this.anims.generateFrameNames('animations', { prefix: 'grid_square_', end: 7}),
+            repeat: -1,
+            frameRate: 20
+        });
+
+        const drop_cursor = this.add.sprite(100, 100, 'animations')
+            .setDepth(1)
+            .setSize(16, 16)
+            .setOrigin(0, 0)
+            .setVisible(false)
+            .play('drop_cursor_fx1')
+        ;
+
         let dragEmitter: ParticleEmitter;
         let scene = this;
         this.input.on('dragstart', function (pointer, gameObject, dragX, dragY) {
@@ -129,6 +158,16 @@ class SceneGame extends Phaser.Scene {
             this.pipeMap
             gameObject.x = dragX;
             gameObject.y = dragY;
+
+            let tx = toGrid(gameObject.x, 16, this.pipeMap.offsetX);
+            let ty = toGrid(gameObject.y, 16, this.pipeMap.offsetY);
+            let inBounds = tx >= 0 && ty >= 0 && tx < this.pipeMap.width && ty < this.pipeMap.height;
+
+            drop_cursor.setVisible(inBounds);
+            drop_cursor.setPosition(
+            tx * 16 + this.pipeMap.offsetX,
+            ty * 16 + this.pipeMap.offsetY
+            );
         });
 
 
@@ -137,12 +176,16 @@ class SceneGame extends Phaser.Scene {
         }
 
         this.input.on('dragend', (pointer, gameObject: Sprite, dragX, dragY) => {
-            scene.sound.play('sfx_plop');
-
             let tx = toGrid(gameObject.x, 16, this.pipeMap.offsetX);
             let ty = toGrid(gameObject.y, 16, this.pipeMap.offsetY);
 
-            let tile = '?'; // fixme
+            let tile = Feat.PipeNESW; // fixme
+
+            if (this.pipeMap.has(tx, ty))
+                scene.sound.play('sfx_replace');
+            else
+                scene.sound.play('sfx_plop');
+
 
             this.pipeMap.set(tx, ty, tile);
 
@@ -152,6 +195,8 @@ class SceneGame extends Phaser.Scene {
             scene.time.delayedCall(3000, function () {
                 emitter.remove();
             });
+
+            drop_cursor.setVisible(false);
         });
 
 

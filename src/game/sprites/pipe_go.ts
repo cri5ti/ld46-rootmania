@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
-import {Pipe} from "stream";
 import {randPick} from "../../util/math";
+import {isPipe, PipeFrame, Rad90} from "../consts";
 import Container = Phaser.GameObjects.Container;
 
 export class PipeGameObject extends Phaser.GameObjects.Container
@@ -22,17 +22,19 @@ export class PipeGameObject extends Phaser.GameObjects.Container
 
     public neighbors: PipeGameObject[] = [null, null, null, null];
 
-    constructor(scene, parent: Container, x, y) {
+    constructor(scene, parent: Container, x, y, pipeFlag) {
         super(scene, x, y);
 
-        const offy = parent.y;
+        const offY = parent.y;
 
         this.tileX = x / 16;
         this.tileY = y / 16;
-        // this.scale = 2;
+        this.pipeFlag = pipeFlag;
+
 
         this.image = this.scene.make.image({}, false)
-            .setPosition(0, 0)
+            // .setPosition(8, 8)
+            // .setOrigin(0.5, 0.5)
             .setOrigin(0, 0)
         this.add(this.image);
 
@@ -42,7 +44,7 @@ export class PipeGameObject extends Phaser.GameObjects.Container
             this.maskImages[i] = this.scene.make.image({}, false)
                 .setOrigin(0.5, 0.5)
                 .setRotation(i * Math.PI/2)
-                .setPosition(x + 8, y + offy + 8);
+                .setPosition(x + 8, y + offY + 8);
 
             this.maskBitmaps[i] = this.maskImages[i].createBitmapMask();
 
@@ -66,21 +68,38 @@ export class PipeGameObject extends Phaser.GameObjects.Container
 
             this.add(this.tileFluids[i]);
         }
+
+        this._updateTextures();
     }
 
 
     t = 0;
 
     update(time) {
-        this.image.setTexture('atlas', 'pipe_NESW');
+    }
+
+    _updateTextures() {
+        const featFlag = this.pipeFlag;
+
+        if (isPipe(featFlag)) {
+            let frame = PipeFrame[featFlag];
+
+            this.image
+                .setTexture('atlas', frame)
+                // .setSize(16, 16)
+                // .setOrigin(0.5, 0.5)
+                // .setRotation(pt.deg * Rad90)
+                // .setPosition(8, 8)
+            ;
+        }
+
+
     }
 
     fluidUpdate() {
         this.t++;
 
-        const time = this.scene.time.now;
-
-        this.image.setTexture('atlas', 'pipe_NESW');
+        // const time = this.scene.time.now;
 
         // flow
         for(let i=0; i<4; i++) {

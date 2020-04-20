@@ -2,10 +2,10 @@
 
 export function tweakJsonCoords(json) {
 
-    const slices = json.meta.slices.reduce((r, i) => {
+    const slices = json.meta.slices ? json.meta.slices.reduce((r, i) => {
         r[i.name] = i.keys[0];
         return r
-    }, {});
+    }, {}) : {};
 
     for (let k in json.frames) {
         let f = json.frames[k];

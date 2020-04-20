@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
-import {Pipe} from "stream";
 import {randXY} from "../util/math";
-import {Dir, DirXY, Feat, isPipe, isWater, PipeTile} from "./consts";
+import {DirXY, Feat, isWater} from "./consts";
 import {PipeGameObject} from "./sprites/pipe_go";
 import Container = Phaser.GameObjects.Container;
 import Group = Phaser.GameObjects.Group;
@@ -39,19 +38,6 @@ export class PipeMap {
     init() {
         const {width, height, scene} = this;
 
-        // const map = scene.make.tilemap({
-        //     key: 'map',
-        //     tileWidth: 16,
-        //     tileHeight: 16,
-        //     data: makeMap(width, height, 0)
-        // });
-        //
-        // map.addTilesetImage('set1', 'tiles1', 16, 16);
-        //
-        // this._tileLayer = map.createDynamicLayer('layer', 'set1', 0, 80);
-        // this._tileLayer.layer.width = width;
-        // this._tileLayer.layer.height = height;
-
         const container = this.container = scene.add.container(this.offsetX, this.offsetY);
 
         this.pipesGroup = scene.add.group();
@@ -59,11 +45,15 @@ export class PipeMap {
         // this.addPipe(0, 0);
         // this.addPipe(1, 0);
         // this.addPipe(0, 1);
-        this.addPipe(2, 3);
+        this.addPipe(2, 3, Feat.PipeNESW);
+        this.addPipe(3, 3, Feat.PipeEW);
+        this.addPipe(4, 3, Feat.PipeSW);
+        this.addPipe(4, 4, Feat.PipeNE);
+        this.addPipe(5, 4, Feat.PipeNW);
 
         this.scene.time.addEvent({
             loop: true,
-            delay: 200,
+            delay: 20,
             callback: this.fluidUpdate,
             callbackScope: this
         });
@@ -88,8 +78,8 @@ export class PipeMap {
                 .setOrigin(0, 0);
             container.add(s);
 
-            this.addPipe(x, 0);
-            this.addPipe(x, 1);
+            this.addPipe(x, 0, Feat.PipeNS);
+            this.addPipe(x, 1, Feat.PipeNS);
             // this.featMap[0][x] = Feat.PipeNS;
             // this.featMap[1][x] = Feat.PipeNS;
         }
@@ -190,12 +180,19 @@ export class PipeMap {
         });
     }
 
-    set(tx: any, ty: any, tile: any /*FIXME*/) {
-        this.addPipe(tx, ty);
+    has(tx: int, ty: any): boolean {
+        if (!this.inBounds(tx, ty)) return false;
+        return this.pipesMap[ty][tx] != null;
     }
 
-    private addPipe(tx: number, ty: number) {
-        const p = new PipeGameObject(this.scene, this.container, tx * 16, ty * 16);
+    set(tx: int, ty: any, featMask: int) {
+        this.addPipe(tx, ty, featMask);
+    }
+
+    private addPipe(tx: int, ty: int, featMask: int) {
+
+        const p = new PipeGameObject(this.scene, this.container, tx * 16, ty * 16, featMask);
+
         this.container.add(p);
         // this.scene.children.add(p);
         this.pipesGroup.add(p);

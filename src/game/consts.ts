@@ -52,24 +52,46 @@ export function isPipeW(n: int) {
     return (n & 0b1000) > 0;
 }
 
-export const PipeTile = {
+export const PipeFrame = {
     // horizontal, vertical
-    [Feat.PipeNS]: {frame: 'pipe_NS', deg: 0},
-    [Feat.PipeEW]: {frame: 'pipe_NS', deg: 1},
+    [Feat.PipeNS]: 'pipe_0101',
+    [Feat.PipeEW]: 'pipe_1010',
 
     // corner
-    [Feat.PipeNE]: {frame: 'pipe_NE', deg: 0},
-    [Feat.PipeES]: {frame: 'pipe_NE', deg: 1},
-    [Feat.PipeSW]: {frame: 'pipe_NE', deg: 2},
-    [Feat.PipeNW]: {frame: 'pipe_NE', deg: 3},
+    [Feat.PipeNE]: 'pipe_0011',
+    [Feat.PipeES]: 'pipe_0110',
+    [Feat.PipeSW]: 'pipe_1100',
+    [Feat.PipeNW]: 'pipe_1001',
 
     // 3
-    [Feat.PipeNES]: {frame: 'pipe_NES', deg: 0},
-    [Feat.PipeESW]: {frame: 'pipe_NES', deg: 1},
-    [Feat.PipeNSW]: {frame: 'pipe_NES', deg: 2},
-    [Feat.PipeNEW]: {frame: 'pipe_NES', deg: 3},
+    [Feat.PipeNES]: 'pipe_0111',
+    [Feat.PipeESW]: 'pipe_1110',
+    [Feat.PipeNSW]: 'pipe_1101',
+    [Feat.PipeNEW]: 'pipe_1011',
 
     // 4
-    [Feat.PipeNESW]: {frame: 'pipe_NESW', deg: 0},
+    [Feat.PipeNESW]: 'pipe_1111',
 };
 
+// export const MaskTile = {
+//     // horizontal, vertical
+//     [Feat.PipeNS]: {frame: 'pipe_NS', deg: 0},
+//     [Feat.PipeEW]: {frame: 'pipe_NS', deg: 1},
+//
+//     // corner
+//     [Feat.PipeNE]: {frame: 'pipe_NE', deg: 0},
+//     [Feat.PipeES]: {frame: 'pipe_NE', deg: 1},
+//     [Feat.PipeSW]: {frame: 'pipe_NE', deg: 2},
+//     [Feat.PipeNW]: {frame: 'pipe_NE', deg: 3},
+//
+//     // 3
+//     [Feat.PipeNES]: {frame: 'pipe_NES', deg: 0},
+//     [Feat.PipeESW]: {frame: 'pipe_NES', deg: 1},
+//     [Feat.PipeNSW]: {frame: 'pipe_NES', deg: 2},
+//     [Feat.PipeNEW]: {frame: 'pipe_NES', deg: 3},
+//
+//     // 4
+//     [Feat.PipeNESW]: {frame: 'pipe_NESW', deg: 0},
+// };
+
+export const Rad90 = Math.PI/2;
