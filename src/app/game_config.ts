@@ -3,6 +3,8 @@ import sceneGame from "../game/scene_game";
 import sceneMenu from "../menu/scene_menu";
 
 
+export const PROD = process.env.NODE_ENV !== 'development';
+
 const gameConfig: Phaser.Types.Core.GameConfig = {
     type: Phaser.WEBGL,
     width: 320,
@@ -24,7 +26,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     //     ]
     // },
     // scene: [sceneMenu, sceneGame]
-    scene:  (process.env.NODE_ENV === 'development') ? [sceneGame] : [sceneMenu, sceneGame]
+    scene:  !PROD ? [sceneGame] : [sceneMenu, sceneGame]
 };
 
 

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 import {randPick} from "../../util/math";
-import {isPipe, PipeFrame, Rad90} from "../consts";
+import {isPipe, PipeFrame} from "../consts";
 import Container = Phaser.GameObjects.Container;
 
 export class PipeGameObject extends Phaser.GameObjects.Container
@@ -73,8 +73,6 @@ export class PipeGameObject extends Phaser.GameObjects.Container
     }
 
 
-    t = 0;
-
     update(time) {
     }
 
@@ -97,7 +95,6 @@ export class PipeGameObject extends Phaser.GameObjects.Container
     }
 
     fluidUpdate() {
-        this.t++;
 
         // const time = this.scene.time.now;
 
