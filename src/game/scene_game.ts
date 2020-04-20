@@ -5,22 +5,25 @@ import {Gui} from "./gui";
 import {createEmitterSmoke} from "./particles/particle_smoke";
 import {PipeMap} from "./pipe_map";
 
+const atlas_json = require('../../assets/atlas.json');
+const masks_json = require('../../assets/masks.json');
+const animations_json = require('../../assets/animations.json');
 
 export class SceneGame extends Phaser.Scene {
     pipeMap: PipeMap;
     gui: Gui;
 
     preload() {
-        this.load.audio('sfx_plop', require('../res/sfx/blip_select_1.wav'));
-        this.load.audio('sfx_pick', require('../res/sfx/jump_15.wav'));
-        this.load.audio('sfx_get', require('../res/sfx/blip_select_12.wav'));
-        this.load.audio('sfx_replace', require('../res/sfx/explosion_11.wav'));
-        this.load.audio('music', require('../res/sfx/2192.ogg'));
+        this.load.audio('sfx_plop', 'assets/sfx/blip_select_1.wav');
+        this.load.audio('sfx_pick', 'assets/sfx/jump_15.wav');
+        this.load.audio('sfx_get', 'assets/sfx/blip_select_12.wav');
+        this.load.audio('sfx_replace', 'assets/sfx/explosion_11.wav');
+        this.load.audio('music', 'assets/sfx/2192.ogg');
 
-        this.load.image('bg1', require('../res/bg1.png'));
-        this.load.atlas('atlas', require('../res/atlas.png'), tweakJsonCoords(require('../res/atlas.json')));
-        this.load.atlas('masks', require('../res/masks.png'), tweakJsonCoords(require('../res/masks.json')));
-        this.load.atlas('animations', require('../res/animations.png'), tweakJsonCoords(require('../res/animations.json')));
+        this.load.image('bg1', 'assets/bg1.png');
+        this.load.atlas('atlas', 'assets/atlas.png', tweakJsonCoords(atlas_json ));
+        this.load.atlas('masks', 'assets/masks.png', tweakJsonCoords(masks_json));
+        this.load.atlas('animations', 'assets/animations.png', tweakJsonCoords(animations_json));
     }
 
 

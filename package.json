@@ -2,17 +2,21 @@
   "name": "ld46",
   "version": "0.1.0",
   "scripts": {
-    "build": "parcel build src/index.html --public-url ./",
-    "watch": "parcel watch src/index.html",
-    "start": "parcel serve src/index.html",
-    "clean": "rm -v dist/*"
+    "build": "webpack",
+    "dev": "webpack-dev-server"
   },
   "dependencies": {
-    "@types/node": "^13.13.0",
-    "parcel": "^1.12.4",
     "phaser": "^3.22.0"
   },
   "devDependencies": {
-    "typescript": "^3.8.3"
+    "@types/node": "^13.13.0",
+    "typescript": "^3.8.3",
+    "copy-webpack-plugin": "^4.6.0",
+    "ts-loader": "^5.4.5",
+    "tslint": "^5.20.1",
+    "typescript-tslint-plugin": "^0.5.5",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   }
 }
