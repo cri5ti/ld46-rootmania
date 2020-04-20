@@ -1,6 +1,6 @@
 { "frames": {
    "smoke_1": {
-    "frame": { "x": 23, "y": 56, "w": 12, "h": 12 },
+    "frame": { "x": 44, "y": 67, "w": 12, "h": 12 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 2, "y": 34, "w": 12, "h": 12 },
@@ -24,7 +24,7 @@
     "duration": 100
    },
    "glit_1": {
-    "frame": { "x": 98, "y": 47, "w": 3, "h": 3 },
+    "frame": { "x": 55, "y": 44, "w": 3, "h": 3 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 55, "y": 39, "w": 3, "h": 3 },
@@ -40,7 +40,7 @@
     "duration": 100
    },
    "glit_3": {
-    "frame": { "x": 53, "y": 44, "w": 5, "h": 5 },
+    "frame": { "x": 50, "y": 44, "w": 5, "h": 5 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 86, "y": 38, "w": 5, "h": 5 },
@@ -48,7 +48,7 @@
     "duration": 100
    },
    "glit_4": {
-    "frame": { "x": 77, "y": 58, "w": 21, "h": 5 },
+    "frame": { "x": 11, "y": 79, "w": 21, "h": 5 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 86, "y": 38, "w": 21, "h": 5 },
@@ -64,7 +64,7 @@
     "duration": 100
    },
    "pipe_NE": {
-    "frame": { "x": 35, "y": 56, "w": 12, "h": 12 },
+    "frame": { "x": 82, "y": 70, "w": 12, "h": 12 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 20, "y": 0, "w": 12, "h": 12 },
@@ -72,7 +72,7 @@
     "duration": 100
    },
    "pipe_NES": {
-    "frame": { "x": 0, "y": 50, "w": 12, "h": 16 },
+    "frame": { "x": 32, "y": 60, "w": 12, "h": 16 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 36, "y": 0, "w": 12, "h": 16 },
@@ -128,7 +128,7 @@
     "duration": 100
    },
    "truck_1": {
-    "frame": { "x": 34, "y": 44, "w": 19, "h": 12 },
+    "frame": { "x": 82, "y": 58, "w": 19, "h": 12 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 69, "y": 20, "w": 19, "h": 12 },
@@ -144,7 +144,7 @@
     "duration": 100
    },
    "mask_NE": {
-    "frame": { "x": 66, "y": 58, "w": 11, "h": 11 },
+    "frame": { "x": 56, "y": 74, "w": 11, "h": 11 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 21, "y": 16, "w": 11, "h": 11 },
@@ -152,7 +152,7 @@
     "duration": 100
    },
    "mask_NES": {
-    "frame": { "x": 12, "y": 50, "w": 11, "h": 16 },
+    "frame": { "x": 0, "y": 66, "w": 11, "h": 16 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 37, "y": 16, "w": 11, "h": 16 },
@@ -167,8 +167,48 @@
     "sourceSize": { "w": 512, "h": 128 },
     "duration": 100
    },
+   "flow_1": {
+    "frame": { "x": 34, "y": 44, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 64, "w": 16, "h": 16 },
+    "sourceSize": { "w": 512, "h": 128 },
+    "duration": 100
+   },
+   "flow_2": {
+    "frame": { "x": 0, "y": 50, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 16, "y": 64, "w": 16, "h": 16 },
+    "sourceSize": { "w": 512, "h": 128 },
+    "duration": 100
+   },
+   "flow_3": {
+    "frame": { "x": 16, "y": 50, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 32, "y": 64, "w": 16, "h": 16 },
+    "sourceSize": { "w": 512, "h": 128 },
+    "duration": 100
+   },
+   "flow_4": {
+    "frame": { "x": 50, "y": 51, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 48, "y": 64, "w": 16, "h": 16 },
+    "sourceSize": { "w": 512, "h": 128 },
+    "duration": 100
+   },
+   "flow_5": {
+    "frame": { "x": 66, "y": 58, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 64, "y": 64, "w": 16, "h": 16 },
+    "sourceSize": { "w": 512, "h": 128 },
+    "duration": 100
+   },
    "pointer": {
-    "frame": { "x": 53, "y": 51, "w": 13, "h": 13 },
+    "frame": { "x": 11, "y": 66, "w": 13, "h": 13 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 0, "y": 48, "w": 13, "h": 13 },
@@ -181,26 +221,18 @@
   "version": "1.2.17-x64",
   "image": "atlas.png",
   "format": "RGBA8888",
-  "size": { "w": 102, "h": 69 },
+  "size": { "w": 102, "h": 85 },
   "scale": "1",
   "layers": [
-   { "name": "smoke_1", "group": "particles", "opacity": 255, "blendMode": "normal" },
-   { "name": "smoke_2", "group": "particles", "opacity": 255, "blendMode": "normal" },
-   { "name": "smoke_3", "group": "particles", "opacity": 255, "blendMode": "normal" },
-   { "name": "glit_1", "group": "particles", "opacity": 255, "blendMode": "normal" },
-   { "name": "glit_2", "group": "particles", "opacity": 255, "blendMode": "normal" },
-   { "name": "glit_3", "group": "particles", "opacity": 255, "blendMode": "normal" },
-   { "name": "glit_4", "group": "particles", "opacity": 255, "blendMode": "normal" },
-   { "name": "pipe_NS", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "pipe_NE", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "pipe_NES", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "pipe_NESW", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "water", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "tree_4", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "tree_3", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "tree_2", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "tree_1", "group": "sprite", "opacity": 255, "blendMode": "normal" },
-   { "name": "truck_1", "group": "sprite", "opacity": 255, "blendMode": "normal" }
+   { "name": "mask_NS", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "mask_NE", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "mask_NES", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "mask_NESW", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "flow_1", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "flow_2", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "flow_3", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "flow_4", "group": "mask", "opacity": 255, "blendMode": "normal" },
+   { "name": "flow_5", "group": "mask", "opacity": 255, "blendMode": "normal" }
   ],
   "slices": [
    { "name": "tree_2", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 144, "y": 16, "w": 48, "h": 48 }, "pivot": {"x": 16, "y": 32 } }] },

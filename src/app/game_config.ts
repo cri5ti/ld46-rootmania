@@ -3,9 +3,8 @@ import sceneGame from "../game/scene_game";
 import sceneMenu from "../menu/scene_menu";
 
 
-
 const gameConfig: Phaser.Types.Core.GameConfig = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     width: 320,
     height: 240,
     zoom: 3,
@@ -19,6 +18,11 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     render: {
         pixelArt: true
     },
+    // plugins: {
+    //     global: [
+    //         { key: 'PipePlugin', plugin: PipePlugin, start: true }
+    //     ]
+    // },
     // scene: [sceneMenu, sceneGame]
     scene:  (process.env.NODE_ENV === 'development') ? [sceneGame] : [sceneMenu, sceneGame]
 };
