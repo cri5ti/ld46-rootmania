@@ -21,6 +21,13 @@ export const enum Dir {
     W = 3
 }
 
+export const DirOpposite = [
+    /*N = / Dir.S,
+    /*E =*/ Dir.W,
+    /*S =*/ Dir.N,
+    /*W =*/ Dir.E
+];
+
 export const DirXY = [
     [0, -1],
     [1, 0],
@@ -36,20 +43,11 @@ export function isPipe(n: int) {
     return (n & 0b1111) > 0;
 }
 
-export function isPipeN(n: int) {
-    return (n & 0b0001) > 0;
-}
+const DirBitmask = [ /*N =*/ 0b0001, /*E =*/ 0b0010, /*S =*/ 0b0100, /*W =*/ 0b1000 ];
 
-export function isPipeE(n: int) {
-    return (n & 0b0010) > 0;
-}
-
-export function isPipeS(n: int) {
-    return (n & 0b0100) > 0;
-}
-
-export function isPipeW(n: int) {
-    return (n & 0b1000) > 0;
+export function isPipeOpen(pipeMask: int, dir: int /* 0-3 */) {
+    const dirMask = DirBitmask[dir];
+    return (pipeMask & dirMask) > 0;
 }
 
 export const PipeFrame = {
@@ -71,6 +69,22 @@ export const PipeFrame = {
 
     // 4
     [Feat.PipeNESW]: 'pipe_1111',
+};
+
+export const PipeExits = {
+    [Feat.PipeNS]: 2,
+    [Feat.PipeEW]: 2,
+    [Feat.PipeNE]: 2,
+    [Feat.PipeES]: 2,
+    [Feat.PipeSW]: 2,
+    [Feat.PipeNW]: 2,
+    // 3
+    [Feat.PipeNES]: 3,
+    [Feat.PipeESW]: 3,
+    [Feat.PipeNSW]: 3,
+    [Feat.PipeNEW]: 3,
+    // 4
+    [Feat.PipeNESW]: 4,
 };
 
 // export const MaskTile = {

@@ -1,7 +1,9 @@
 import * as Phaser from 'phaser';
+import {PROD} from "../app/game_config";
 import {randXY} from "../util/math";
 import {DirXY, Feat, isWater} from "./consts";
-import {PipeGameObject} from "./sprites/pipe_go";
+import {waterSpout} from "./objs/fluid_obj";
+import {PipeGameObject} from "./objs/pipe_obj";
 import Container = Phaser.GameObjects.Container;
 import Group = Phaser.GameObjects.Group;
 import Scene = Phaser.Scene;
@@ -19,8 +21,9 @@ export class PipeMap {
     tileIndex: number[][];
     flowMap: number[][];
 
-    pipesGroup: Group;
     pipesMap: PipeGameObject[][];
+    pipesGroup: Group;
+    // spoutsGroup: Group;
 
     private container: Container;
 
@@ -40,25 +43,14 @@ export class PipeMap {
 
         const container = this.container = scene.add.container(this.offsetX, this.offsetY);
 
-        this.pipesGroup = scene.add.group();
 
-        // this.addPipe(0, 0);
-        // this.addPipe(1, 0);
-        // this.addPipe(0, 1);
-        this.addPipe(2, 3, Feat.PipeNESW);
-        this.addPipe(3, 3, Feat.PipeEW);
-        this.addPipe(4, 3, Feat.PipeSW);
-        this.addPipe(4, 4, Feat.PipeNE);
-        this.addPipe(5, 4, Feat.PipeNW);
-
+        // fluid update ticker
         this.scene.time.addEvent({
             loop: true,
-            delay: 20,
+            delay: 200,
             callback: this.fluidUpdate,
             callbackScope: this
         });
-
-        // container.add(new Pipe(scene, 'sprite'));
 
         // trees
         for (let i = 0; i < 6; i++) {
@@ -78,17 +70,36 @@ export class PipeMap {
                 .setOrigin(0, 0);
             container.add(s);
 
-            this.addPipe(x, 0, Feat.PipeNS);
-            this.addPipe(x, 1, Feat.PipeNS);
+            // this.addPipe(x, 0, Feat.PipeNS);
+            // this.addPipe(x, 1, Feat.PipeNS);
             // this.featMap[0][x] = Feat.PipeNS;
             // this.featMap[1][x] = Feat.PipeNS;
         }
 
-        // water spouts
-        for (let i = 0; i < 5; i++) {
-            let [x, y] = randXY(0, (height - 1)>>1, width - 1, height - 1);
-            this.featMap[y][x] = Feat.Water;
+        if (PROD) {
+            // water spouts
+            for (let i = 0; i < 5; i++) {
+                let [x, y] = randXY(0, (height - 1) >> 1, width - 1, height - 1);
+                this.featMap[y][x] = Feat.Water;
+            }
+        } else {
+            this.featMap[3][5] = Feat.Water;
         }
+
+
+        this.pipesGroup = scene.add.group();
+        // this.spoutsGroup = scene.add.group();
+
+        // this.addPipe(0, 0);
+        // this.addPipe(1, 0);
+        // this.addPipe(0, 1);
+        // this.addPipe(2, 3, Feat.PipeNESW);
+        // this.addPipe(3, 3, Feat.PipeEW);
+        // this.addPipe(4, 3, Feat.PipeSW);
+        // this.addPipe(4, 4, Feat.PipeNE);
+        this.addPipe(5, 4, Feat.PipeNW);
+        this.addPipe(4, 4, Feat.PipeEW);
+
 
 
         this.rebuildTiles();
@@ -144,39 +155,45 @@ export class PipeMap {
 
     }
 
-
-    update() {
-    }
+    update() {}
 
     inBounds = (tx, ty) => tx >= 0 && tx <= this.width - 1 && ty >= 0 && ty <= this.height - 1;
 
     fluidUpdate() {
         // update inflows
-        this.pipesGroup.children.each((p: PipeGameObject) => {
-            let tx = p.tileX;
-            let ty = p.tileY;
+        // this.pipesGroup.children.each((p: PipeGameObject) => {
+        //     let tx = p.tileX;
+        //     let ty = p.tileY;
+        //
+        //
+        //     for (let dir = 0; dir < 4; dir++) {
+        //         let [dx, dy] = DirXY[dir];
+        //         let rx = tx + dx;
+        //         let ry = ty + dy;
+        //         if (!this.inBounds(rx, ry)) continue;
+        //
+        //         let w = isWater(this.featMap[ry][rx]) ? 255 : 0;
+        //
+        //         let pn = p.neighbors[dir];
+        //         if (pn)
+        //             w |= (pn.fluidMasks[dir] & 1);
+        //
+        //         p.inflow[dir] = w ? 255 : 0;
+        //
+        //     }
+        // });
 
-
-            for (let dir = 0; dir < 4; dir++) {
-                let [dx, dy] = DirXY[dir];
-                let rx = tx + dx;
-                let ry = ty + dy;
-                if (!this.inBounds(rx, ry)) continue;
-
-                let w = isWater(this.featMap[ry][rx]) ? 255 : 0;
-
-                let pn = p.neighbors[dir];
-                if (pn)
-                    w |= (pn.fluidMasks[dir] & 1);
-
-                p.inflow[dir] = w ? 255 : 0;
-
-            }
+        this.pipesGroup.children.each((i: PipeGameObject) => {
+            i.fluidUpdatePre();
         });
 
         // update inflows
         this.pipesGroup.children.each((i: PipeGameObject) => {
             i.fluidUpdate();
+        });
+
+        this.pipesGroup.children.each((i: PipeGameObject) => {
+            i.fluidUpdatePost();
         });
     }
 
@@ -211,7 +228,13 @@ export class PipeMap {
                 let ry = ip.tileY + dy;
                 if (!this.inBounds(rx, ry)) continue;
 
-                let np = this.pipesMap[ry][rx];
+                let np;
+                let f = this.featMap[ry][rx];
+                if (isWater(f))
+                    np = waterSpout;
+                else
+                    np = this.pipesMap[ry][rx];
+
                 ip.neighbors[dir] = np;
             }
         });

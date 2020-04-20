@@ -16,7 +16,7 @@ export class Gui extends Phaser.GameObjects.Container {
     pipeMap: PipeMap;
 
 
-    maxStackSize = 8;
+    maxStackSize = 16;
     stack: GameObject[] = [];
 
 
@@ -24,8 +24,6 @@ export class Gui extends Phaser.GameObjects.Container {
         super(scene, 0, 0);
 
         this.pipeMap = scene.pipeMap;
-
-        const initialPieceCount = 15;
 
 
         scene.anims.create({
@@ -78,7 +76,22 @@ export class Gui extends Phaser.GameObjects.Container {
             let tx = toGrid(gameObject.x, 16, this.pipeMap.offsetX);
             let ty = toGrid(gameObject.y, 16, this.pipeMap.offsetY);
 
-            let tile = Feat.PipeNESW; // fixme
+            const tile = gameObject.getData('feat');
+
+            gameObject.destroy();
+            drop_cursor.setVisible(false);
+            dragEmitter.on = false;
+            let emitter = dragEmitter;
+            scene.time.delayedCall(3000, function () {
+                emitter.remove();
+            });
+
+
+            if (!this.pipeMap.inBounds(tx, ty))
+                return;
+
+
+            // let tile = Feat.PipeNESW; // fixme
 
             if (this.pipeMap.has(tx, ty))
                 scene.sound.play('sfx_replace');
@@ -88,14 +101,9 @@ export class Gui extends Phaser.GameObjects.Container {
 
             this.pipeMap.set(tx, ty, tile);
 
-            gameObject.destroy();
-            dragEmitter.on = false;
-            let emitter = dragEmitter;
-            scene.time.delayedCall(3000, function () {
-                emitter.remove();
-            });
 
-            drop_cursor.setVisible(false);
+
+
         });
 
     }
@@ -130,7 +138,9 @@ export class Gui extends Phaser.GameObjects.Container {
         const img = this.scene.add.image(400, ty, 'atlas', frame)
             .setDepth(2)
             .setSize(16, 16)
-            .setOrigin(0, 0);
+            .setOrigin(0, 0)
+            .setData('feat', feat)
+        ;
 
         this.stack.push(img);
 

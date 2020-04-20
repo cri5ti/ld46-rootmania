@@ -4,6 +4,7 @@ import sceneMenu from "../menu/scene_menu";
 
 
 export const PROD = process.env.NODE_ENV !== 'development';
+// export const PROD = true;
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
     type: Phaser.WEBGL,
