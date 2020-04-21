@@ -1,11 +1,14 @@
 import * as Phaser from 'phaser';
 import Scene = Phaser.Scene;
+import ParticleEmitterManager = Phaser.GameObjects.Particles.ParticleEmitterManager;
+import ParticleEmitter = Phaser.GameObjects.Particles.ParticleEmitter;
 
 
-export function createEmitterSmoke(scene: Scene) {
-    const particles = scene.add.particles('atlas');
+export function createSmoke(scene: Scene): [ParticleEmitterManager, ParticleEmitter] {
+    const particles = scene.make.particles({}, false)
+        .setTexture('atlas');
 
-    return particles.createEmitter({
+    const emitter = particles.createEmitter({
         frame: {
             frames: [
                 'smoke_1',
@@ -24,4 +27,6 @@ export function createEmitterSmoke(scene: Scene) {
         blendMode: 'MULTIPLY',
         // on: false
     });
+
+    return [particles, emitter]
 }

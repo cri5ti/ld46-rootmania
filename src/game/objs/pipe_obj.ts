@@ -153,14 +153,14 @@ export class PipeGameObject
 
             let p = this.nextPressure[dir] = this.nextPressure[dir] - avg;
 
-            this.debit[dir] = p % 0xFFFF;
+            let m = this.flowMask[dir];
+
+            this.debit[dir] = p & m;
             this.volume[dir] = (this.volume[dir] + this.debit[dir]) % 0xFFFF;
 
             if (p == 0) continue; // still
 
             const bits = Math.round(Math.log2(Math.abs(p))) >> 2;
-
-            let m = this.flowMask[dir];
 
             if (p > 0) {
                 // outward flow
@@ -191,15 +191,20 @@ export class PipeGameObject
 
     }
 
-    fluidUpdatePost() {
-        DEBUG && console.log('Pipe: %s [%d, %d]  ⏩pressures: [%s],   ➡fluid: [%s],    ➡volume [%s],  🔀neighbors: [%s]',
+    _debug() {
+        console.log('Pipe: %s [%d, %d]  ⏩pressures: [%s],   ➡fluid: [%s],   ➡volume [%s],  ➡debit [%s],  🔀neighbors: [%s]',
             this.id,
             this.tileX, this.tileY,
             this.nextPressure.join(","),
             this.nextFlowMask.map(i=>printMask(i)).join(", "),
             this.volume.join(", "),
+            this.debit.join(", "),
             this.neighbors.map(i => i ? i.id : "▫").join(", ")
         );
+    }
+
+    fluidUpdatePost() {
+        DEBUG && this._debug();
 
         for(let i=0; i<4; i++) {
             this.pressure[i] = this.nextPressure[i];

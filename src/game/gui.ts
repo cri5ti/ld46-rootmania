@@ -105,9 +105,6 @@ export class Gui extends Phaser.GameObjects.Container {
 
             this.pipeMap.set(tx, ty, tile);
 
-
-
-
         });
 
     }

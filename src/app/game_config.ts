@@ -1,10 +1,12 @@
 import * as Phaser from "phaser";
 import sceneGame from "../game/scene_game";
 import sceneMenu from "../menu/scene_menu";
+import sceneQuote from "../menu/scene_quote";
+import sceneEnd from "../menu/scene_end";
 
 
-export const PROD = process.env.NODE_ENV !== 'development';
-// export const PROD = true;
+// export const PROD = process.env.NODE_ENV !== 'development';
+export const PROD = true;
 
 export const DEBUG = false;
 
@@ -29,7 +31,9 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     //     ]
     // },
     // scene: [sceneMenu, sceneGame]
-    scene:  !PROD ? [sceneGame] : [sceneMenu, sceneGame]
+    scene:
+        // !PROD ? [sceneGame] :
+        [sceneMenu, sceneQuote, sceneGame, sceneEnd]
 };
 
 

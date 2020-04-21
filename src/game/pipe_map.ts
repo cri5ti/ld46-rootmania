@@ -1,17 +1,17 @@
 import * as Phaser from 'phaser';
 import {DEBUG, PROD} from "../app/game_config";
 import {randXY} from "../util/math";
-import {Dir, DirOpposite, DirXY, Feat, isPipeOpen, isWater} from "./consts";
+import {DirOpposite, DirXY, Feat, isPipeOpen, isWater} from "./consts";
 import {PipeGameObject} from "./objs/pipe_obj";
 import {waterSpout} from "./objs/spout_obj";
 import {TreeGameObject} from "./objs/tree_obj";
+import {SceneGame} from "./scene_game";
 import Container = Phaser.GameObjects.Container;
 import Group = Phaser.GameObjects.Group;
-import Scene = Phaser.Scene;
 
 
 export class PipeMap {
-    private scene: Scene;
+    private scene: SceneGame;
     width: int;
     height: int;
 
@@ -31,7 +31,7 @@ export class PipeMap {
 
     private container: Container;
 
-    constructor(scene: Scene, width = 20, height = 8) {
+    constructor(scene: SceneGame, width = 20, height = 8) {
         this.scene = scene;
         this.width = width;
         this.height = height;
@@ -59,12 +59,14 @@ export class PipeMap {
 
             // let frame = randPick(['tree_1', 'tree_2', 'tree_3', 'tree_4']);
 
-            let t = new TreeGameObject(scene, tx, i%4);
+            let t = new TreeGameObject(this.scene, tx, 0);
             this.trees[tx] = t;
             this.treesGroup.add(t);
             container.add(t)
 
-            // this.addPipe(x, 0, Feat.PipeNS, false);
+            if (PROD) {
+                this.addPipe(tx, 0, Feat.PipeNS, false);
+            }
             // this.addPipe(x, 1, Feat.PipeNS, false);
             // this.featMap[0][x] = Feat.PipeNS;
             // this.featMap[1][x] = Feat.PipeNS;
@@ -77,18 +79,21 @@ export class PipeMap {
                 this.featMap[y][x] = Feat.Water;
             }
         } else {
-            this.featMap[3][5] = Feat.Water;
+            this.featMap[2][4] = Feat.Water;
+            this.featMap[2][6] = Feat.Water;
+
+            this.featMap[2][8] = Feat.Water;
+            this.addPipe(5, 0, Feat.PipeNS, false);
+            this.addPipe(5, 1, Feat.PipeNS, false);
+            this.addPipe(5, 2, Feat.PipeNEW, false);
+
+            this.addPipe(8, 0, Feat.PipeNS, false);
+            this.addPipe(8, 1, Feat.PipeNS, false);
+            this.addPipe(8, 2, Feat.PipeNS, false);
         }
 
 
         // this.spoutsGroup = scene.add.group();
-
-
-        this.addPipe(5, 4, Feat.PipeNEW, false);
-        this.addPipe(5, 0, Feat.PipeNS, false);
-        this.addPipe(5, 1, Feat.PipeNS, false);
-        this.addPipe(5, 2, Feat.PipeNS, false);
-        this.addPipe(5, 3, Feat.PipeNS, false);
 
 
         this._rebuildNeighbors();
@@ -221,6 +226,13 @@ export class PipeMap {
                 ip.neighbors[dir] = np;
             }
         });
+    }
+
+    killTree(t: TreeGameObject) {
+        this.trees[t.tx] = null;
+        this.treesGroup.remove(t);
+        this.container.remove(t)
+        t.destroy();
     }
 }
 

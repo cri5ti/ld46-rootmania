@@ -22,3 +22,5 @@ export function randPick<T>(arr:T[]):T {
     return arr[rand0N(arr.length)];
 }
 
+
+// console.log(new Array(100).fill(0).map(i => randPick([1,2,3])));
